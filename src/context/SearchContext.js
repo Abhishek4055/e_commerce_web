@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import axios from "axios";
-import { ITEM_PER_PAGE, RESULTS_FORMET, SEARCH_URL, SITE_ID } from "../config";
+import { RESULTS_FORMET, SEARCH_URL, SITE_ID } from "../config";
 
 const SearchContext = createContext();
 
@@ -52,9 +52,9 @@ export const SearchProvider = ({ children }) => {
 
   const handleSearch = (value) => {
     setSearchInput(value);
-    setPage(1); // Reset to the first page while searching
-    setAllResultwithperpage({}); // Clear the cache on new search
-    fetchResults(value, 1); // Fetch results for the first page
+    setPage(1);
+    setAllResultwithperpage({});
+    fetchResults(value, 1);
   };
 
   const handlePagination = (newPage) => {
