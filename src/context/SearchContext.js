@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import axios from "axios";
-import { RESULTS_FORMET, SEARCH_URL, SITE_ID } from "../config";
+import { RESULTS_FORMET, SEARCH_URL, SITE_ID } from "../Myconfig";
 
 const SearchContext = createContext();
 
