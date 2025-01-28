@@ -1,4 +1,10 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  useEffect,
+  useCallback,
+} from "react";
 import axios from "axios";
 import { RESULTS_FORMET, SEARCH_URL, SITE_ID } from "../Myconfig";
 
@@ -14,65 +20,65 @@ export const SearchProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [allResultwithperpage, setAllResultwithperpage] = useState({});
 
-  const fetchResults = async (query, page) => {
-    setIsLoading(true);
-    if (allResultwithperpage[page]) {
-      setResults(allResultwithperpage[page].results);
-      setTotalPages(allResultwithperpage[page].totalPages);
-      setIsLoading(false);
-      return;
-    }
+  const fetchResults = useCallback(
+    async (query, currentPage) => {
+      setIsLoading(true);
+      console.log("Fetching for page:", currentPage);
 
-    try {
-      const response = await axios.get(SEARCH_URL, {
-        params: {
-          siteId: SITE_ID,
-          q: query,
-          resultsFormat: RESULTS_FORMET,
-          page: page,
-        },
-      });
+      if (allResultwithperpage[currentPage]) {
+        setResults(allResultwithperpage[currentPage].results);
+        setTotalPages(allResultwithperpage[currentPage].totalPages);
+        setIsLoading(false);
+        return;
+      }
 
-      setAllResultwithperpage((prevCache) => ({
-        ...prevCache,
-        [page]: {
-          results: response?.data?.results,
-          totalPages: response?.data?.pagination?.totalPages,
-        },
-      }));
+      try {
+        const response = await axios.get(SEARCH_URL, {
+          params: {
+            siteId: SITE_ID,
+            q: query,
+            resultsFormat: RESULTS_FORMET,
+            page: currentPage,
+          },
+        });
 
-      setResults(response?.data?.results);
-      setTotalPages(response?.data?.pagination?.totalPages);
-    } catch (error) {
-      console.error("Error🔎  ", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+        setAllResultwithperpage((prevCache) => ({
+          ...prevCache,
+          [currentPage]: {
+            results: response?.data?.results,
+            totalPages: response?.data?.pagination?.totalPages,
+          },
+        }));
+
+        setResults(response?.data?.results);
+        setTotalPages(response?.data?.pagination?.totalPages);
+      } catch (error) {
+        console.error("Error🔎  ", error);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [allResultwithperpage]
+  );
 
   const handleSearch = (value) => {
     setSearchInput(value);
     setPage(1);
     setAllResultwithperpage({});
-    fetchResults(value, 1);
   };
 
   const handlePagination = (newPage) => {
     if (newPage !== page) {
       setPage(newPage);
-      fetchResults(searchInput, newPage);
     }
   };
 
   useEffect(() => {
-    if (searchInput) {
-      fetchResults(searchInput, 1);
-    } else {
-      fetchResults("", 1);
-    }
-  }, [searchInput]);
+    const query = searchInput || "";
+    fetchResults(query, page);
+  }, [searchInput, page, fetchResults]);
 
-  console.log("Prduct Result 🔎", results);
+  console.log("Product Results 🔎", results);
 
   return (
     <SearchContext.Provider
