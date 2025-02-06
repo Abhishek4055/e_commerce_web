@@ -6,7 +6,7 @@ import React, {
   useCallback,
 } from "react";
 import axios from "axios";
-import { RESULTS_FORMET, SEARCH_URL, SITE_ID } from "../Myconfig";
+import { RESULTS_FORMET, SEARCH_URL, SITE_ID, XYZ } from "../Myconfig";
 
 const SearchContext = createContext();
 
@@ -24,6 +24,8 @@ export const SearchProvider = ({ children }) => {
     async (query, currentPage) => {
       setIsLoading(true);
       console.log("Fetching for page:", currentPage);
+      console.log("Fetching for page:", XYZ);
+      console.log("Siteid", SITE_ID);
 
       if (allResultwithperpage[currentPage]) {
         setResults(allResultwithperpage[currentPage].results);
